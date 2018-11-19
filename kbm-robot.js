@@ -9,6 +9,8 @@ function kbmRobot() {
     "use strict";
 
     var DEBUG = false;
+    var javaPath = "java";
+    var jarDir = path.join(__dirname, "java");
 
     var easyKeys = {
         "ESC": "VK_ESCAPE",
@@ -134,11 +136,11 @@ function kbmRobot() {
             var p = Promise.resolve();
             chars.forEach(function(character) {
                 p = p.then(function() {
-                    return type(character, downDelay);
-                })
-                .then(function() {
-                    return sleep(upDelay);
-                });
+                        return type(character, downDelay);
+                    })
+                    .then(function() {
+                        return sleep(upDelay);
+                    });
             });
             p.then(res);
         });
@@ -152,34 +154,34 @@ function kbmRobot() {
             }
             if (key.toLowerCase() !== key || shiftableKey) {
                 press("shift")
-                .then(function() {
-                    return sleep(delay);
-                })
-                .then(function() {
-                    return press(key);
-                })
-                .then(function() {
-                    return sleep(delay);
-                })
-                .then(function() {
-                    return release(key);
-                })
-                .then(function() {
-                    return sleep(delay);
-                })
-                .then(function() {
-                    return release("shift");
-                })
-                .then(res);
+                    .then(function() {
+                        return sleep(delay);
+                    })
+                    .then(function() {
+                        return press(key);
+                    })
+                    .then(function() {
+                        return sleep(delay);
+                    })
+                    .then(function() {
+                        return release(key);
+                    })
+                    .then(function() {
+                        return sleep(delay);
+                    })
+                    .then(function() {
+                        return release("shift");
+                    })
+                    .then(res);
             } else {
                 press(key)
-                .then(function() {
-                    return sleep(delay);
-                })
-                .then(function() {
-                    return release(key);
-                })
-                .then(res);
+                    .then(function() {
+                        return sleep(delay);
+                    })
+                    .then(function() {
+                        return release(key);
+                    })
+                    .then(res);
             }
         });
     };
@@ -208,13 +210,13 @@ function kbmRobot() {
     var mouseClick = function(buttons, delay) {
         return new Promise(function(res) {
             mousePress(buttons)
-            .then(function() {
-                return sleep(delay);
-            })
-            .then(function() {
-                return mouseRelease(buttons);
-            })
-            .then(res);
+                .then(function() {
+                    return sleep(delay);
+                })
+                .then(function() {
+                    return mouseRelease(buttons);
+                })
+                .then(res);
         });
     };
 
@@ -228,13 +230,13 @@ function kbmRobot() {
     var pub = {
         startJar: function(JRE_ver) {
             JRE_ver = JRE_ver || 6;
-            var jarPath = path.join(__dirname, "java", "robot" + JRE_ver + ".jar");
+            var jarPath = path.join(jarDir, "robot" + JRE_ver + ".jar");
             if (!keyPresser) {
                 if (!fs.existsSync(jarPath)) {
                     throw new Error("ERR: Can't find robot" + JRE_ver +
                         ".jar. Expected Path: " + jarPath);
                 }
-                keyPresser = spawn("java", ["-jar", jarPath]);
+                keyPresser = spawn(javaPath, ["-jar", jarPath]);
 
                 // Need to hook up these handlers to prevent the
                 // jar from crashing sometimes.
@@ -271,14 +273,14 @@ function kbmRobot() {
             if (!keyPresser) {
                 throw new Error(notStartedErr);
             }
-            actionArr.push({func: press, args: [key]});
+            actionArr.push({ func: press, args: [key] });
             return pub;
         },
         release: function(key) {
             if (!keyPresser) {
                 throw new Error(notStartedErr);
             }
-            actionArr.push({func: release, args: [key]});
+            actionArr.push({ func: release, args: [key] });
             return pub;
         },
         typeString: function(str, downDelay, upDelay) {
@@ -287,7 +289,7 @@ function kbmRobot() {
             }
             downDelay = downDelay || 0;
             upDelay = upDelay || 0;
-            actionArr.push({func: typeString, args: [str, downDelay, upDelay]});
+            actionArr.push({ func: typeString, args: [str, downDelay, upDelay] });
             return pub;
         },
         type: function(key, delay) {
@@ -295,21 +297,21 @@ function kbmRobot() {
                 throw new Error(notStartedErr);
             }
             delay = delay || 0;
-            actionArr.push({func: type, args: [key, delay]});
+            actionArr.push({ func: type, args: [key, delay] });
             return pub;
         },
         sleep: function(amt) {
             if (!keyPresser) {
                 throw new Error(notStartedErr);
             }
-            actionArr.push({func: sleep, args: [amt]});
+            actionArr.push({ func: sleep, args: [amt] });
             return pub;
         },
         mouseMove: function(x, y) {
             if (!keyPresser) {
                 throw new Error(notStartedErr);
             }
-            actionArr.push({func: mouseMove, args: [x, y]});
+            actionArr.push({ func: mouseMove, args: [x, y] });
             return pub;
         },
         mousePress: function(buttons) {
@@ -317,7 +319,7 @@ function kbmRobot() {
                 throw new Error(notStartedErr);
             }
             buttons += "";
-            actionArr.push({func: mousePress, args: [buttons]});
+            actionArr.push({ func: mousePress, args: [buttons] });
             return pub;
         },
         mouseRelease: function(buttons) {
@@ -325,7 +327,7 @@ function kbmRobot() {
                 throw new Error(notStartedErr);
             }
             buttons += "";
-            actionArr.push({func: mouseRelease, args: [buttons]});
+            actionArr.push({ func: mouseRelease, args: [buttons] });
             return pub;
         },
         mouseClick: function(buttons, delay) {
@@ -334,14 +336,14 @@ function kbmRobot() {
             }
             delay = delay || 0;
             buttons += "";
-            actionArr.push({func: mouseClick, args: [buttons, delay]});
+            actionArr.push({ func: mouseClick, args: [buttons, delay] });
             return pub;
         },
         mouseWheel: function(amount) {
             if (!keyPresser) {
                 throw new Error(notStartedErr);
             }
-            actionArr.push({func: mouseWheel, args: [amount]});
+            actionArr.push({ func: mouseWheel, args: [amount] });
             return pub;
         },
         go: function(cb) {
@@ -368,6 +370,22 @@ function kbmRobot() {
             } else {
                 return p;
             }
+        },
+
+        /**
+         * Set the path to the java executable to use. Defaults to "java"
+         * @param {*} path 
+         */
+        setJavaPath: function(path) {
+            javaPath = path;
+        },
+
+        /**
+         * Set the path to the directory where the robot*.jar files are located.
+         * @param {} path 
+         */
+        setJarDir: function(path) {
+            jarDir = path;
         }
     };
 
